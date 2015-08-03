@@ -13,9 +13,15 @@ exports.load = function(req, res, next, quizId){
     });
 };
 
+
 exports.index = function(req, res){
-    models.Quiz.findAll().then(function(quizes){
-        res.render('quizes/index', {quizes: quizes});
+    var valorBusqueda = req.query.search;
+    if(valorBusqueda === undefined)
+        valorBusqueda = "";    
+    valorBusqueda = "%" + valorBusqueda.replace(/\s/g,"%") + "%";
+
+    models.Quiz.findAll({where: ["pregunta like ?", valorBusqueda]}).then(function(quizes){
+        res.render('quizes/index', {quizes: quizes, busqueda: valorBusqueda});
     }).catch(function(error){
         next(error);
     });
